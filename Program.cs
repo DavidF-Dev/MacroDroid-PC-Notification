@@ -38,11 +38,11 @@ while (true)
     byte[] data = client.Receive(ref endPoint);
     Console.WriteLine($"Received broadcast message from client {endPoint}");
     Console.Write("Decoded data is: ");
-    Console.WriteLine(Encoding.ASCII.GetString(data));
+    Console.WriteLine(Encoding.UTF8.GetString(data));
     Console.WriteLine();
 
     // Parse data
-    string json = Encoding.ASCII.GetString(data);
+    string json = Encoding.UTF8.GetString(data);
     NotificationData notification = JsonConvert.DeserializeObject<NotificationData>(json);
     
     // Decrypt notification text if necessary
