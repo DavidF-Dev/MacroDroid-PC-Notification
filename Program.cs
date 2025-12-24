@@ -30,7 +30,7 @@ while (true)
     NotificationData notification = JsonConvert.DeserializeObject<NotificationData>(json);
     
     // Write to history file
-    string fileName = Path.Combine(Environment.CurrentDirectory, notification.App + "_" + notification.Title + ".txt");
+    string fileName = Path.Combine(Environment.CurrentDirectory, string.Join("_", (notification.App + "_" + notification.Title).Split(Path.GetInvalidFileNameChars())) + ".txt");
     bool newLine = File.Exists(fileName);
     using (StreamWriter sw = File.AppendText(fileName))
     {
