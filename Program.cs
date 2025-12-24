@@ -45,31 +45,22 @@ while (true)
     string json = Encoding.UTF8.GetString(data);
     NotificationData notification = JsonConvert.DeserializeObject<NotificationData>(json);
     
-    // Decrypt notification text if necessary
-    string notificationText = notification.Text;
-    if (notification.Encrypted)
-    {
-        // TODO
-    }
-
-    notificationText = notificationText.Trim();
-    
     // Write to history file
     string dataFilePath = Path.Combine(dataDirPath, string.Join("_", (notification.App + "_" + notification.Title).Replace(' ', '_').Split(Path.GetInvalidFileNameChars())) + ".txt");
     bool newLine = File.Exists(dataFilePath);
     using (StreamWriter sw = File.AppendText(dataFilePath))
     {
-        sw.Write($"{(newLine ? "\n\n" : "")}[{DateTime.Now:g}]\n{notificationText}");
+        sw.Write($"{(newLine ? "\n\n" : "")}[{DateTime.Now:g}]\n{notification.Text}");
     }
     
     // Display notification
     ToastContentBuilder builder = new();
-    builder.AddArgument("not_text", notificationText);
+    builder.AddArgument("not_text", notification.Text);
     builder.AddArgument("file_path", dataFilePath);
     builder.AddAppLogoOverride(new Uri(messagesAssetFilePath));
     builder.AddText(notification.App);
     builder.AddText(notification.Title);
-    builder.AddText(notificationText);
+    builder.AddText(notification.Text);
     builder.Show();
 }
 
@@ -124,8 +115,5 @@ internal readonly struct NotificationData
     
     [JsonProperty("not_text")]
     public readonly string Text;
-
-    [JsonProperty("encrypted")]
-    public readonly bool Encrypted;
 }
 
