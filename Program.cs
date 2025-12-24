@@ -29,12 +29,19 @@ while (true)
     string json = Encoding.ASCII.GetString(data);
     NotificationData notification = JsonConvert.DeserializeObject<NotificationData>(json);
     
+    // Decrypt notification text if necessary
+    string notificationText = notification.Text;
+    if (notification.Encrypted)
+    {
+        // TODO
+    }
+    
     // Write to history file
     string fileName = Path.Combine(Environment.CurrentDirectory, string.Join("_", (notification.App + "_" + notification.Title).Split(Path.GetInvalidFileNameChars())) + ".txt");
     bool newLine = File.Exists(fileName);
     using (StreamWriter sw = File.AppendText(fileName))
     {
-        sw.Write($"{(newLine ? '\n' : "")}[{DateTime.Now:g}]\n{notification.Text}");
+        sw.Write($"{(newLine ? '\n' : "")}[{DateTime.Now:g}]\n{notificationText}");
     }
     
     // Display notification
@@ -43,7 +50,7 @@ while (true)
     builder.AddAppLogoOverride(new Uri(logoMessagesFilePath));
     builder.AddText(notification.App);
     builder.AddText(notification.Title);
-    builder.AddText(notification.Text);
+    builder.AddText(notificationText);
     builder.Show();
 }
 
