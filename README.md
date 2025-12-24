@@ -27,6 +27,7 @@ This program will display native toast notifications on Windows for Google Messa
 ### Constraints
 - Wifi Connected: `[YourWifi]`
 - Compare Values: `{not_title} != ""`
+- Compare Values: `{not_title} != Message not delivered`
 - Compare Values: `{notification} != ""`
 - Compare Values: `{notification} != {lv=prev_dict[{not_title}]}`
 
