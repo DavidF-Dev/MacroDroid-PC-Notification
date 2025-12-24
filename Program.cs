@@ -26,6 +26,14 @@ while (true)
     string json = Encoding.ASCII.GetString(data);
     NotificationData notification = JsonConvert.DeserializeObject<NotificationData>(json);
     
+    // Write to history file
+    string fileName = Path.Combine(Environment.CurrentDirectory, notification.App + "_" + notification.Title + ".txt");
+    bool newLine = File.Exists(fileName);
+    using (StreamWriter sw = File.AppendText(fileName))
+    {
+        sw.Write($"{(newLine ? '\n' : "")}[{DateTime.Now:g}]\n{notification.Text}");
+    }
+    
     // Display notification
     ToastContentBuilder builder = new();
     builder.AddAppLogoOverride(new Uri(logoMessagesFilePath));
