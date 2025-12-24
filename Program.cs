@@ -1,9 +1,12 @@
 ﻿
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Newtonsoft.Json;
+
+ToastNotificationManagerCompat.OnActivated += OnToastNotificationActivated;
 
 // Download assets
 string logoMessagesFilePath = Path.Combine(Environment.CurrentDirectory, "logo_messages.png");
@@ -36,11 +39,25 @@ while (true)
     
     // Display notification
     ToastContentBuilder builder = new();
+    builder.AddArgument("file_name", fileName);
     builder.AddAppLogoOverride(new Uri(logoMessagesFilePath));
     builder.AddText(notification.App);
     builder.AddText(notification.Title);
     builder.AddText(notification.Text);
     builder.Show();
+}
+
+static void OnToastNotificationActivated(ToastNotificationActivatedEventArgsCompat e)
+{
+    Console.WriteLine("Activated: " + e.Argument);
+    
+    // Open the history file
+    ToastArguments args = ToastArguments.Parse(e.Argument);
+    string fileName = args.Get("file_name");
+    if (File.Exists(fileName) && Path.GetExtension(fileName) == ".txt")
+    {
+        Process.Start(new ProcessStartInfo(fileName) {Verb = "open", UseShellExecute = true});
+    }
 }
 
 static async void DownloadFileAsync(string fileName, string url, bool replace = false)
