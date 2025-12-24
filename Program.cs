@@ -35,6 +35,8 @@ while (true)
     {
         // TODO
     }
+
+    notificationText = notificationText.Trim();
     
     // Write to history file
     string fileName = Path.Combine(Environment.CurrentDirectory, string.Join("_", (notification.App + "_" + notification.Title).Replace(' ', '_').Split(Path.GetInvalidFileNameChars())) + ".txt");
