@@ -46,6 +46,7 @@ while (true)
     
     // Display notification
     ToastContentBuilder builder = new();
+    builder.AddArgument("not_text", notificationText);
     builder.AddArgument("file_name", fileName);
     builder.AddAppLogoOverride(new Uri(logoMessagesFilePath));
     builder.AddText(notification.App);
@@ -58,10 +59,18 @@ static void OnToastNotificationActivated(ToastNotificationActivatedEventArgsComp
 {
     Console.WriteLine("Activated: " + e.Argument);
     
-    // Open the history file
     ToastArguments args = ToastArguments.Parse(e.Argument);
+    string notificationText = args.Get("not_text");
     string fileName = args.Get("file_name");
-    if (File.Exists(fileName) && Path.GetExtension(fileName) == ".txt")
+
+    // Open the URL
+    if (Uri.TryCreate(notificationText, UriKind.Absolute, out Uri uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+    {
+        Process.Start(uri.ToString());
+    }
+    
+    // Open the history file
+    else if (File.Exists(fileName) && Path.GetExtension(fileName) == ".txt")
     {
         Process.Start(new ProcessStartInfo(fileName) {Verb = "open", UseShellExecute = true});
     }
