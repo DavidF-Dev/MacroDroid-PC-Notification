@@ -8,9 +8,25 @@ using Newtonsoft.Json;
 
 ToastNotificationManagerCompat.OnActivated += OnToastNotificationActivated;
 
+// Create assets directory
+string assetsDirPath = Path.Combine(Environment.CurrentDirectory, "assets");
+if (!Directory.Exists(assetsDirPath))
+{
+    Directory.CreateDirectory(assetsDirPath);
+}
+
 // Download assets
-string logoMessagesFilePath = Path.Combine(Environment.CurrentDirectory, "logo_messages.png");
-DownloadFileAsync(logoMessagesFilePath, "https://ssl.gstatic.com/android-messages-web/images/2022.3/1x/messages_2022_96dp.png");
+string messagesAssetFilePath = Path.Combine(assetsDirPath, "logo_messages.png");
+DownloadFileAsync(messagesAssetFilePath, "https://ssl.gstatic.com/android-messages-web/images/2022.3/1x/messages_2022_96dp.png");
+
+// Re-create data directory
+string dataDirPath = Path.Combine(Environment.CurrentDirectory, "data");
+if (Directory.Exists(dataDirPath))
+{
+    Directory.Delete(dataDirPath, true);
+}
+
+Directory.CreateDirectory(dataDirPath);
 
 // Listen for broadcasts
 const int port = 5000;
@@ -39,9 +55,9 @@ while (true)
     notificationText = notificationText.Trim();
     
     // Write to history file
-    string fileName = Path.Combine(Environment.CurrentDirectory, string.Join("_", (notification.App + "_" + notification.Title).Replace(' ', '_').Split(Path.GetInvalidFileNameChars())) + ".txt");
-    bool newLine = File.Exists(fileName);
-    using (StreamWriter sw = File.AppendText(fileName))
+    string dataFilePath = Path.Combine(dataDirPath, string.Join("_", (notification.App + "_" + notification.Title).Replace(' ', '_').Split(Path.GetInvalidFileNameChars())) + ".txt");
+    bool newLine = File.Exists(dataFilePath);
+    using (StreamWriter sw = File.AppendText(dataFilePath))
     {
         sw.Write($"{(newLine ? "\n\n" : "")}[{DateTime.Now:g}]\n{notificationText}");
     }
@@ -49,8 +65,8 @@ while (true)
     // Display notification
     ToastContentBuilder builder = new();
     builder.AddArgument("not_text", notificationText);
-    builder.AddArgument("file_name", fileName);
-    builder.AddAppLogoOverride(new Uri(logoMessagesFilePath));
+    builder.AddArgument("file_path", dataFilePath);
+    builder.AddAppLogoOverride(new Uri(messagesAssetFilePath));
     builder.AddText(notification.App);
     builder.AddText(notification.Title);
     builder.AddText(notificationText);
@@ -63,7 +79,7 @@ static void OnToastNotificationActivated(ToastNotificationActivatedEventArgsComp
     
     ToastArguments args = ToastArguments.Parse(e.Argument);
     string notificationText = args.Get("not_text");
-    string fileName = args.Get("file_name");
+    string filePath = args.Get("file_path");
 
     // Open the URL
     if (Uri.TryCreate(notificationText, UriKind.Absolute, out Uri uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
@@ -72,9 +88,9 @@ static void OnToastNotificationActivated(ToastNotificationActivatedEventArgsComp
     }
     
     // Open the history file
-    else if (File.Exists(fileName) && Path.GetExtension(fileName) == ".txt")
+    else if (File.Exists(filePath) && Path.GetExtension(filePath) == ".txt")
     {
-        Process.Start(new ProcessStartInfo(fileName) {Verb = "open", UseShellExecute = true});
+        Process.Start(new ProcessStartInfo(filePath) {Verb = "open", UseShellExecute = true});
     }
 }
 
