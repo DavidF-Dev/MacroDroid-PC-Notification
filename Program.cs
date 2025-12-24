@@ -84,7 +84,7 @@ static void OnToastNotificationActivated(ToastNotificationActivatedEventArgsComp
     // Open the URL
     if (Uri.TryCreate(notificationText, UriKind.Absolute, out Uri uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
     {
-        Process.Start(uri.ToString());
+        Process.Start(new ProcessStartInfo(uri.ToString()) { Verb = "open", UseShellExecute = true});
     }
     
     // Open the history file
