@@ -41,7 +41,7 @@ while (true)
     bool newLine = File.Exists(fileName);
     using (StreamWriter sw = File.AppendText(fileName))
     {
-        sw.Write($"{(newLine ? '\n' : "")}[{DateTime.Now:g}]\n{notificationText}");
+        sw.Write($"{(newLine ? "\n\n" : "")}[{DateTime.Now:g}]\n{notificationText}");
     }
     
     // Display notification
