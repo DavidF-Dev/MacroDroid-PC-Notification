@@ -20,6 +20,8 @@ string messagesAssetFilePath = Path.Combine(assetsDirPath, "logo_messages.png");
 DownloadFileAsync(messagesAssetFilePath, "https://ssl.gstatic.com/android-messages-web/images/2022.3/1x/messages_2022_96dp.png");
 string phoneAssetFilePath = Path.Combine(assetsDirPath, "logo_phone.png");
 DownloadFileAsync(phoneAssetFilePath, "https://cdn-icons-png.flaticon.com/512/7044/7044863.png");
+string batteryAssetFilePath = Path.Combine(assetsDirPath, "logo_battery.png");
+DownloadFileAsync(batteryAssetFilePath, "https://cdn-icons-png.flaticon.com/512/8514/8514306.png");
 
 // Re-create data directory
 string dataDirPath = Path.Combine(Environment.CurrentDirectory, "data");
@@ -63,6 +65,7 @@ while (true)
     {
         "Messages" => messagesAssetFilePath,
         "Phone" => phoneAssetFilePath,
+        "Battery" => batteryAssetFilePath,
         _ => null
     };
     if (assetFilePath != null)
