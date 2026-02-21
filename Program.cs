@@ -18,6 +18,8 @@ if (!Directory.Exists(assetsDirPath))
 // Download assets
 string messagesAssetFilePath = Path.Combine(assetsDirPath, "logo_messages.png");
 DownloadFileAsync(messagesAssetFilePath, "https://ssl.gstatic.com/android-messages-web/images/2022.3/1x/messages_2022_96dp.png");
+string phoneAssetFilePath = Path.Combine(assetsDirPath, "logo_phone.png");
+DownloadFileAsync(phoneAssetFilePath, "https://cdn-icons-png.flaticon.com/512/7044/7044863.png");
 
 // Re-create data directory
 string dataDirPath = Path.Combine(Environment.CurrentDirectory, "data");
@@ -57,7 +59,17 @@ while (true)
     ToastContentBuilder builder = new();
     builder.AddArgument("not_text", notification.Text);
     builder.AddArgument("file_path", dataFilePath);
-    builder.AddAppLogoOverride(new Uri(messagesAssetFilePath));
+    string assetFilePath = notification.App switch
+    {
+        "Messages" => messagesAssetFilePath,
+        "Phone" => phoneAssetFilePath,
+        _ => null
+    };
+    if (assetFilePath != null)
+    {
+        builder.AddAppLogoOverride(new Uri(assetFilePath));
+    }
+    
     builder.AddText(notification.App);
     builder.AddText(notification.Title);
     builder.AddText(notification.Text);
